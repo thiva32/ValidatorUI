@@ -1,6 +1,6 @@
 {
     "enable_freezetransform": true,
     "enable_ngon": true,
-    "enable_non_manifold": false,
+    "enable_non_manifold": true,
     "enable_loosegeometry": false
 }
