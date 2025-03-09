@@ -16,7 +16,7 @@ class mypropertygroup(bpy.types.PropertyGroup):
         default='baseconfig', #default value
         #update global variable when the value is changed
         update = update_config
-        
+
         ) # type: ignore
     
     
@@ -29,10 +29,12 @@ class ValidatorsPanel(bpy.types.Panel):
     bl_category = 'Validator'
 
     def draw(self, context):
-        
+        #force update the UI  
         layout = self.layout
         scene = context.scene
         mypreset = scene.my_preset
+
+        current_config = scene.get("current_config",{})
 
         box = layout.box() 
         row = box.row(align=True)

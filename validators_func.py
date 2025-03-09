@@ -1,7 +1,6 @@
 import bpy
 
 
-
 # This is the function that will be called when the user clicks their respective validate button
 @staticmethod
 def freezetransform_func(validation_type):

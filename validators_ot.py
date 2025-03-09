@@ -6,10 +6,13 @@ from .loadconfig import load_config
 #loadvalidator config
 current_config = {}
 
+#update the config
 def update_config(self, context):
-    global current_config
+    #config = load_config(self.config_preset)
     current_config = load_config(self.config_preset)
-    print (f'{current_config}')
+    print (f'updated config : {current_config}')
+
+    context.scene["current_config"] = current_config
 
 
 class OT_Validate(bpy.types.Operator):
