@@ -1,43 +1,48 @@
 import bpy
 
-def testvalidate_01_func(validation_type):
+
+
+# This is the function that will be called when the user clicks their respective validate button
+@staticmethod
+def freezetransform_func(validation_type):
 
     if validation_type =="check":
-        print("testvalidate_01_check")
+        print("executing freezetransform_check")
     elif validation_type =="fix":
-        bpy.ops.mesh.primitive_cube_add(size=1)
-        print("testvalidate_01_fix")
+        print("freezetransform_fix")
     else:
-        print("please specify a validation type")
-    return {'FINISHED'}
-    
-
-def testvalidate_02_func(validation_type):
-
-    if validation_type =="check":
-        print("testvalidate_02_check")
-    elif validation_type =="fix":
-        print("testvalidate_02_fix")
-    else:
-        print("Please specify a validation type")
+        print("executing please specify a validation type")
     return {'FINISHED'}
 
-def testvalidate_03_func(validation_type):
+@staticmethod
+def ngon_func(validation_type):
 
     if validation_type =="check":
-        print("testvalidate_03_check")
+        print("executing ngon_check")
     elif validation_type =="fix":
-        print("testvalidate_03_fix")
+        print("executing ngon_fix")
     else:
         print("Please specify a validation type")
     return {'FINISHED'}
 
-def testvalidate_04_func(validation_type):
+@staticmethod
+def non_manifold_func(validation_type):
+
+    if validation_type =="check":
+        print("executing non_manifold_check")
+    elif validation_type =="fix":
+        print("executing non_manifold_fix")
+    else:
+        print("Please specify a validation type")
+    return {'FINISHED'}
+
+@staticmethod
+def loosegeometry_func(validation_type):
     
     if validation_type =="check":
-        print("testvalidate_04_check")
+        print("executing loosegeometry_check")
     elif validation_type =="fix":
-        print("testvalidate_04_fix")
+        print("executing loosegeometry_fix")
     else:
         print("Please specify a validation type")
     return {'FINISHED'}

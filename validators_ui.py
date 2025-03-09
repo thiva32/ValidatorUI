@@ -3,16 +3,22 @@ from .validators_ot import current_config,update_config
 
 
 class mypropertygroup(bpy.types.PropertyGroup):
+
     '''Property group for storing validator properties'''
 
-    config_preset : bpy.props.EnumProperty(name="Preset",
+    config_preset : bpy.props.EnumProperty(name="Presets",
         items=[
+            ('baseconfig', "None", ""),
             ('projectconfig_01', "Project 01", ""),
             ('projectconfig_02', "Project 02", "")
         ],
-        default='projectconfig_01', #default value
+        #setting the default value for the preset
+        default='baseconfig', #default value
+        #update global variable when the value is changed
         update = update_config
+        
         ) # type: ignore
+    
     
 class ValidatorsPanel(bpy.types.Panel):
     """Creates a Panel in the Object properties window"""
@@ -31,29 +37,30 @@ class ValidatorsPanel(bpy.types.Panel):
         box = layout.box() 
         row = box.row(align=True)
         row.label(text="v 0.01")
-
+        layout.prop(mypreset,"config_preset")
         box = layout.box()
         row = box.row(align=True)
         row.label(text=" Mesh Validators:")
-        row = box.row(align=True)
-        layout.prop(mypreset,"config_preset")
         
         
-        if current_config.get('enable_validate_01',True):
+        #list of validators
+        #freezetransform function
+        
+        if current_config.get('enable_freezetransform',True):
             row = box.row(align=True)
-            row.operator("object.validate_01", text="Validate 01", icon='CUBE')
+            row.operator("object.freezetransform", text="Freeze Transform", icon='CUBE')
 
-        if current_config.get('enable_validate_02',True):
+        if current_config.get('enable_ngon',True):
             row = box.row(align=True)
-            row.operator("object.validate_02", text="Validate 02", icon='CUBE')
+            row.operator("object.ngon", text="N-gon", icon='CUBE')
         
-        if current_config.get('enable_validate_03',True):
+        if current_config.get('enable_non_manifold',True):
             row = box.row(align=True)
-            row.operator("object.validate_03", text="Validate 03", icon='CUBE')
+            row.operator("object.non_manifold", text="Non-Manifold", icon='CUBE')
         
-        if current_config.get('enable_validate_04',True):
+        if current_config.get('enable_loosegeometry',True):
             row = box.row(align=True)
-            row.operator("object.validate_04", text="Validate 04", icon='CUBE')
+            row.operator("object.loosegeometry", text="Loose Geometry", icon='CUBE')
 
         #separate the validate button with the rest of the validators
         box = layout.box()

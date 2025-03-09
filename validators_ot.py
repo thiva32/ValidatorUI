@@ -1,5 +1,6 @@
-import bpy,bpy.props
-from .validators_func import *
+import bpy
+from bpy.props import StringProperty
+from .validators_func import freezetransform_func, ngon_func, non_manifold_func, loosegeometry_func
 from .loadconfig import load_config
 
 #loadvalidator config
@@ -17,7 +18,13 @@ class OT_Validate(bpy.types.Operator):
     bl_idname = "object.validate"
     bl_label = "Validate"
     bl_options = {'REGISTER', 'UNDO'}
-
+    
+    #Adds a string property to the operator to specify the validation type
+    validation_type: bpy.props.StringProperty(
+        name="Validation Type", 
+        default="check", #default value
+        options={'HIDDEN'} #hide the property from the user
+        ) # type: ignore
 
     @classmethod
     #only allow users to execute if an object is selected
@@ -30,85 +37,69 @@ class OT_Validate(bpy.types.Operator):
 
 
         return {'FINISHED'}
+    
 
-class OT_Validate_01(bpy.types.Operator):
-    """Operator that executes validator 01"""
+class BaseValidatorOperator(bpy.types.Operator):
+    """Base class for validators operators"""
 
-    bl_idname = "object.validate_01"
-    bl_label = "Validate 01"
     bl_options = {'REGISTER', 'UNDO'}
 
-    validation_type: bpy.props.StringProperty(name="Validation Type", default="check") # type: ignore
-
     @classmethod
-    #only allow users to execute if an object is selected
-
     def poll(cls, context):
-        return context.active_object is not None and current_config.get('enable_validate_01',True)
-    
+        return context.active_object is not None and current_config.get(f'enable_{cls.validator_key}',True)
+
     def execute(self, context):
-        result = testvalidate_01_func(self.validation_type)
+        result = self.validator_function(self.validation_type)
         return result
     
-class OT_Validate_02(bpy.types.Operator):
-    """Operator that executes validator 02"""
-
-    bl_idname = "object.validate_02"
-    bl_label = "Validate 02"
-    bl_options = {'REGISTER', 'UNDO'} 
-
-    validation_type: bpy.props.StringProperty(name="Validation Type", default="check") # type: ignore
-
-    @classmethod
-    #only allow users to execute if an object is selected
-
-    def poll(cls, context):
-        return context.active_object is not None and current_config.get('enable_validate_02',True)
-    
-    def execute(self, context):
-        result = testvalidate_02_func(self.validation_type)
-        return result
-    
-class OT_Validate_03(bpy.types.Operator):
-    """Operator that executes validator 03"""
-
-    bl_idname = "object.validate_03"
-    bl_label = "Validate 03"
-    bl_options = {'REGISTER', 'UNDO'} 
-
-    validation_type: bpy.props.StringProperty(name="Validation Type", default="check") # type: ignore
-
-    @classmethod
-    #only allow users to execute if an object is selected
-
-    def poll(cls, context):
-        return context.active_object is not None and current_config.get('enable_validate_03',True)
-    
-    def execute(self, context):
-        result = testvalidate_03_func(self.validation_type)
-        return result
-
-class OT_Validate_04(bpy.types.Operator):
-    """Operator that executes validator 02"""
-
-    bl_idname = "object.validate_04"
-    bl_label = "Validate 04"
-    bl_options = {'REGISTER', 'UNDO'} 
-
-    validation_type: bpy.props.StringProperty(name="Validation Type", default="check") # type: ignore
-
-    @classmethod
-    #only allow users to execute if an object is selected
-
-    def poll(cls, context):
-        return context.active_object is not None and current_config.get('enable_validate_04',True)
-    
-    def execute(self, context):
-        result = testvalidate_04_func(self.validation_type)
-        return result
+    def invoke(self, context, event):
+        """call execute when the operator is invoked"""
+        return self.execute(context)
     
 
-validateoroperators = [OT_Validate,OT_Validate_01,OT_Validate_02,OT_Validate_03,OT_Validate_04]
+
+
+class OT_freezetransform(BaseValidatorOperator):
+    """Operator that executes freezetranform validator"""
+
+    bl_idname = "object.freezetransform"
+    bl_label = "Freeze Transform"
+    validator_key = "freezetransform"
+    validator_function = freezetransform_func
+    validation_type = "check"
+
+    
+
+class OT_ngon(BaseValidatorOperator):
+    """Operator that executes ngon validator"""
+
+    bl_idname = "object.ngon"
+    bl_label = "N-gon"
+    validator_key = "ngon"
+    validator_function = ngon_func
+    validation_type = "check"
+    
+class OT_non_manifold(BaseValidatorOperator):
+    """Operator that executes non-manifold validator"""
+    
+    bl_idname = "object.non_manifold"
+    bl_label = "Non-manifold"
+    validator_key = "non_manifold"
+    validator_function = non_manifold_func
+    validation_type = "check"
+
+class OT_loosegeometry(BaseValidatorOperator):
+    """Operator that executes loosegeometry validator"""
+    
+    bl_idname = "object.loosegeometry"
+    bl_label = "Loose Geometry"
+    validator_key = "loosegeometry"
+    validator_function = loosegeometry_func
+    validation_type = "check"
+    
+    
+
+validateoroperators = [OT_Validate, OT_freezetransform, OT_ngon, OT_non_manifold, OT_loosegeometry]
 
 def register():
     for operator in validateoroperators:
