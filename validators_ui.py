@@ -1,8 +1,8 @@
 import bpy
-from .validators_ot import current_config,update_config
+from .validators_op import update_config
 
 
-class mypropertygroup(bpy.types.PropertyGroup):
+class MyPropertyGroup(bpy.types.PropertyGroup):
 
     '''Property group for storing validator properties'''
 
@@ -12,10 +12,9 @@ class mypropertygroup(bpy.types.PropertyGroup):
             ('projectconfig_01', "Project 01", ""),
             ('projectconfig_02', "Project 02", "")
         ],
-        #setting the default value for the preset
-        default='baseconfig', #default value
-        #update global variable when the value is changed
-        update = update_config
+        
+        default='baseconfig',  #default value                       
+        update = update_config #update global variable when the value is changed
 
         ) # type: ignore
     
@@ -34,35 +33,35 @@ class ValidatorsPanel(bpy.types.Panel):
         scene = context.scene
         mypreset = scene.my_preset
 
-        current_config = scene.get("current_config",{})
+        current_config = scene.get("current_config",{}) #get the current config from the scene
 
         box = layout.box() 
         row = box.row(align=True)
         row.label(text="v 0.01")
-        layout.prop(mypreset,"config_preset")
+        layout.prop(mypreset,"config_preset") #dropdown for the presets
+
         box = layout.box()
         row = box.row(align=True)
-        row.label(text=" Mesh Validators:")
+        row.label(text=" Mesh Validators:")  #label for the validators
         
         
         #list of validators
         #freezetransform function
-        
-        if current_config.get('enable_freezetransform',True):
-            row = box.row(align=True)
-            row.operator("object.freezetransform", text="Freeze Transform", icon='CUBE')
 
-        if current_config.get('enable_ngon',True):
-            row = box.row(align=True)
-            row.operator("object.ngon", text="N-gon", icon='CUBE')
+        validators=[
+            ('enable_freezetransform','object.freezetransform',"Freeze Transform",'CUBE'), #freezetransform
+            ('enable_ngon','object.ngon',"N-gon",'CUBE'),                                  #ngon
+            ('enable_non_manifold','object.non_manifold',"Non-Manifold",'CUBE'),           #non-manifold
+            ('enable_loosegeometry','object.loosegeometry',"Loose Geometry",'CUBE')        #loosegeometry 
+            
+        ]
         
-        if current_config.get('enable_non_manifold',True):
-            row = box.row(align=True)
-            row.operator("object.non_manifold", text="Non-Manifold", icon='CUBE')
-        
-        if current_config.get('enable_loosegeometry',True):
-            row = box.row(align=True)
-            row.operator("object.loosegeometry", text="Loose Geometry", icon='CUBE')
+        #loop through the validators and add the operator to the UI
+        for key,op_id,label,icon in validators:
+            if current_config.get(key,True):
+                row = box.row(align=True)
+                row.operator(op_id, text=label, icon=icon)
+    
 
         #separate the validate button with the rest of the validators
         box = layout.box()
@@ -71,16 +70,19 @@ class ValidatorsPanel(bpy.types.Panel):
 
 
 
-validatorpanels = [mypropertygroup,ValidatorsPanel]
+classes = [
+            MyPropertyGroup,
+            ValidatorsPanel
+            ]
 
 def register():
-    for panel in validatorpanels:
-        bpy.utils.register_class(panel)
+    for cls in classes:
+        bpy.utils.register_class(cls)
 
-    bpy.types.Scene.my_preset = bpy.props.PointerProperty(type=mypropertygroup)
+    bpy.types.Scene.my_preset = bpy.props.PointerProperty(type=MyPropertyGroup)
 
 def unregister():
-    for panel in validatorpanels:
-        bpy.utils.unregister_class(panel)
+    for cls in reversed(classes):
+        bpy.utils.unregister_class(cls)
 
     del bpy.types.Scene.my_preset

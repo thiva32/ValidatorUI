@@ -12,7 +12,7 @@ def update_config(self, context):
     current_config = load_config(self.config_preset)
     print (f'updated config : {current_config}')
 
-    context.scene["current_config"] = current_config
+    context.scene["current_config"] = current_config #update the current config in the scene
 
 
 class OT_Validate(bpy.types.Operator):
@@ -22,6 +22,8 @@ class OT_Validate(bpy.types.Operator):
     bl_label = "Validate"
     bl_options = {'REGISTER', 'UNDO'}
     
+    
+
     #Adds a string property to the operator to specify the validation type
     validation_type: bpy.props.StringProperty(
         name="Validation Type", 
@@ -37,8 +39,28 @@ class OT_Validate(bpy.types.Operator):
 
     def execute(self, context):
         """Main function to execute all validators"""
+        
+        scene = context.scene
+        current_config = scene.get("current_config",{}) #get the current config from the scene
 
-
+        #validators dictionary
+        validators = {
+            'enable_freezetransform':'object.freezetransform', #freezetransform
+            'enable_ngon':'object.ngon',                       #ngon
+            'enable_non_manifold':'object.non_manifold',       #non-manifold
+            'enable_loosegeometry':'object.loosegeometry'      #loosegeometry
+        }
+        
+        for key, operator_id in validators.items():
+            if current_config.get(key, True):                                            # Default to True if key is missing
+                try:  
+                    module_name, operator_name = operator_id.split('.')                  # Split the operator_id into module and operator name              
+                    operator = getattr(getattr(bpy.ops, module_name), operator_name)     # Dynamically get the operator
+                    operator()                                                           # Execute the operator
+                except (AttributeError, RuntimeError) as e:
+                    self.report({'WARNING'}, f"Failed: {operator_id} - {str(e)}")
+                    
+                            
         return {'FINISHED'}
     
 
@@ -49,14 +71,16 @@ class BaseValidatorOperator(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        #only allow users to execute if an object is selected and the validator is enabled
         return context.active_object is not None and current_config.get(f'enable_{cls.validator_key}',True)
 
     def execute(self, context):
+        #call the validator function
         result = self.validator_function(self.validation_type)
         return result
     
     def invoke(self, context, event):
-        """call execute when the operator is invoked"""
+        #call execute when the operator is invoked
         return self.execute(context)
     
 
@@ -102,7 +126,12 @@ class OT_loosegeometry(BaseValidatorOperator):
     
     
 
-validateoroperators = [OT_Validate, OT_freezetransform, OT_ngon, OT_non_manifold, OT_loosegeometry]
+validateoroperators = [
+                    OT_Validate, 
+                    OT_freezetransform, 
+                    OT_ngon, 
+                    OT_non_manifold, 
+                    OT_loosegeometry]
 
 def register():
     for operator in validateoroperators:

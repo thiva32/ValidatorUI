@@ -23,16 +23,16 @@ bl_info = {
 }
 
 
-from .import validators_ot
+from .import validators_op
 from .import validators_ui
 
 def register(): 
-    validators_ot.register()
+    validators_op.register()
     validators_ui.register()
 
 
 def unregister(): 
-    validators_ot.unregister()
+    validators_op.unregister()
     validators_ui.unregister()
 
 
