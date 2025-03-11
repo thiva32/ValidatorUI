@@ -1,6 +1,11 @@
 import bpy
 from bpy.props import StringProperty
-from .validators_func import freezetransform_func, ngon_func, non_manifold_func, loosegeometry_func
+from .validators_func import (
+                                freezetransform_func, 
+                                ngon_func, 
+                                non_manifold_func, 
+                                loosegeometry_func
+                            )
 from .loadconfig import load_config
 
 #loadvalidator config
@@ -15,6 +20,7 @@ def update_config(self, context):
     context.scene["current_config"] = current_config #update the current config in the scene
 
 
+
 class OT_Validate(bpy.types.Operator):
     '''Operator that executes all validator options'''
 
@@ -25,7 +31,7 @@ class OT_Validate(bpy.types.Operator):
     
 
     #Adds a string property to the operator to specify the validation type
-    validation_type: bpy.props.StringProperty(
+    validation_type: StringProperty(
         name="Validation Type", 
         default="check", #default value
         options={'HIDDEN'} #hide the property from the user
