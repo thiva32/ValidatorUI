@@ -1,6 +1,11 @@
 import bpy
 from bpy.props import StringProperty
-from .validators_func import freezetransform_func, ngon_func, non_manifold_func, loosegeometry_func
+from .validators_func import (
+                                freezetransform_func, 
+                                ngon_func, 
+                                non_manifold_func, 
+                                loosegeometry_func
+                            )
 from .loadconfig import load_config
 
 #loadvalidator config
@@ -15,6 +20,7 @@ def update_config(self, context):
     context.scene["current_config"] = current_config #update the current config in the scene
 
 
+
 class OT_Validate(bpy.types.Operator):
     '''Operator that executes all validator options'''
 
@@ -25,7 +31,7 @@ class OT_Validate(bpy.types.Operator):
     
 
     #Adds a string property to the operator to specify the validation type
-    validation_type: bpy.props.StringProperty(
+    validation_type: StringProperty(
         name="Validation Type", 
         default="check", #default value
         options={'HIDDEN'} #hide the property from the user
@@ -35,7 +41,7 @@ class OT_Validate(bpy.types.Operator):
     #only allow users to execute if an object is selected
 
     def poll(cls, context):
-        return context.active_object is not None 
+        return context.selected_objects is not None and context.mode == 'OBJECT'
 
     def execute(self, context):
         """Main function to execute all validators"""
@@ -52,7 +58,8 @@ class OT_Validate(bpy.types.Operator):
         }
         
         for key, operator_id in validators.items():
-            if current_config.get(key, True):                                            # Default to True if key is missing
+            if current_config.get(key, True): 
+                print(f"Executing operator: {operator_id}")                                           # Default to True if key is missing
                 try:  
                     module_name, operator_name = operator_id.split('.')                  # Split the operator_id into module and operator name              
                     operator = getattr(getattr(bpy.ops, module_name), operator_name)     # Dynamically get the operator
@@ -72,7 +79,8 @@ class BaseValidatorOperator(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         #only allow users to execute if an object is selected and the validator is enabled
-        return context.active_object is not None and current_config.get(f'enable_{cls.validator_key}',True)
+        obj = context.active_object
+        return obj is not None and context.mode == 'OBJECT' and current_config.get(f'enable_{cls.validator_key}',True) and obj.type == 'MESH' 
 
     def execute(self, context):
         #call the validator function

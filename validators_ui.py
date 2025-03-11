@@ -1,5 +1,6 @@
 import bpy
 from .validators_op import update_config
+from .statemanager import get_state
 
 
 class MyPropertyGroup(bpy.types.PropertyGroup):
@@ -49,16 +50,24 @@ class ValidatorsPanel(bpy.types.Panel):
         #freezetransform function
 
         validators=[
-            ('enable_freezetransform','object.freezetransform',"Freeze Transform",'CUBE'), #freezetransform
-            ('enable_ngon','object.ngon',"N-gon",'CUBE'),                                  #ngon
-            ('enable_non_manifold','object.non_manifold',"Non-Manifold",'CUBE'),           #non-manifold
-            ('enable_loosegeometry','object.loosegeometry',"Loose Geometry",'CUBE')        #loosegeometry 
-            
+            ('enable_freezetransform','object.freezetransform',"Freeze Transform"), #freezetransform
+            ('enable_ngon','object.ngon',"N-gon"),                                  #ngon
+            ('enable_non_manifold','object.non_manifold',"Non-Manifold"),           #non-manifold
+            ('enable_loosegeometry','object.loosegeometry',"Loose Geometry")        #loosegeometry     
         ]
+
+        state_icons = {
+            'UNCHECKED':'SEQUENCE_COLOR_05',
+            'PASS':'SEQUENCE_COLOR_04',
+            'NEEDS_FIXING':'SEQUENCE_COLOR_01',
+            'UNKNOWN':'QUESTION',
+        }
         
         #loop through the validators and add the operator to the UI
-        for key,op_id,label,icon in validators:
+        for key,op_id,label in validators:
             if current_config.get(key,True):
+                state = get_state(key)
+                icon = state_icons.get(state,'PASS')
                 row = box.row(align=True)
                 row.operator(op_id, text=label, icon=icon)
     
