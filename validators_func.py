@@ -24,8 +24,9 @@ def freezetransform_func(validation_type):
         print("Transform is good") 
         set_state("freezetransform",'PASS')
     else:
+        print("Transform is not good") 
         set_state("freezetransform",'NEEDS_FIXING')
-        print("Transform is not good and state is changed to ", get_state("freezetransform"))
+        
 
     #if the validation type is fix, then we will fix the transform
     if validation_type =="fix":
@@ -33,7 +34,8 @@ def freezetransform_func(validation_type):
         print("Transform Has Been Fixed")  
         set_state("freezetransform",'PASS')
         #rerun check to reconfirm that the transform has been fixed
-        freezetransform_func("check"),print("Executing Check for Safety") 
+        #freezetransform_func("check"),print("Executing Check for Safety")
+
     
     return {'FINISHED'}
     
@@ -43,7 +45,6 @@ def ngon_func(validation_type):
 
     if validation_type =="check":
         print("executing ngon_check")
-        set_state("freezetransform",'PASS')
     elif validation_type =="fix":
         print("executing ngon_fix")
     else:

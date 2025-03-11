@@ -57,7 +57,7 @@ class ValidatorsPanel(bpy.types.Panel):
         ]
 
         state_icons = {
-            'BASE':'SEQUENCE_COLOR_05',
+            'UNCHECKED':'SEQUENCE_COLOR_05',
             'PASS':'SEQUENCE_COLOR_04',
             'NEEDS_FIXING':'SEQUENCE_COLOR_01',
             'UNKNOWN':'QUESTION',
@@ -67,9 +67,7 @@ class ValidatorsPanel(bpy.types.Panel):
         for key,op_id,label in validators:
             if current_config.get(key,True):
                 state = get_state(key)
-                icon = state_icons.get(state,'QUESTION')
-
-
+                icon = state_icons.get(state,'PASS')
                 row = box.row(align=True)
                 row.operator(op_id, text=label, icon=icon)
     

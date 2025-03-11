@@ -41,7 +41,7 @@ class OT_Validate(bpy.types.Operator):
     #only allow users to execute if an object is selected
 
     def poll(cls, context):
-        return context.active_object is not None 
+        return context.selected_objects is not None and context.mode == 'OBJECT'
 
     def execute(self, context):
         """Main function to execute all validators"""
@@ -58,7 +58,8 @@ class OT_Validate(bpy.types.Operator):
         }
         
         for key, operator_id in validators.items():
-            if current_config.get(key, True):                                            # Default to True if key is missing
+            if current_config.get(key, True): 
+                print(f"Executing operator: {operator_id}")                                           # Default to True if key is missing
                 try:  
                     module_name, operator_name = operator_id.split('.')                  # Split the operator_id into module and operator name              
                     operator = getattr(getattr(bpy.ops, module_name), operator_name)     # Dynamically get the operator
@@ -78,7 +79,8 @@ class BaseValidatorOperator(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         #only allow users to execute if an object is selected and the validator is enabled
-        return context.active_object is not None and current_config.get(f'enable_{cls.validator_key}',True)
+        obj = context.active_object
+        return obj is not None and context.mode == 'OBJECT' and current_config.get(f'enable_{cls.validator_key}',True) and obj.type == 'MESH' 
 
     def execute(self, context):
         #call the validator function
