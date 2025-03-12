@@ -1,16 +1,20 @@
 import bpy
 
-checker_states = ["UNCHECKED","PASS","NEEDS_FIXING"]
+state_manager = {}
 
-def get_state(func_name):
+def set_state(operator_name,state):
 
-    scene = bpy.context.scene
-    return scene.get(f"validation_state_{func_name}","UNCHECKED")
+    state_manager[operator_name] = state
+    bpy.context.scene.validation_states = str(state_manager)
 
-def set_state(func_name,state):
-    if state in checker_states:
-        bpy.context.scene[f"validation_state_{func_name}"] = state
-        print(f"validation state for {func_name} set to {state}")              
-    else:
-        print(f"invalid state: {state}")
+def get_state(operator_name):
+    return state_manager.get(operator_name,'UNCHECKED')
+
+
+def register_state():
+    bpy.types.Scene.validation_states = bpy.props.StringProperty(name="ValidationStates")
+
+def unregister_state():
+    del bpy.types.Scene.validation_states
+
 

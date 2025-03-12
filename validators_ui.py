@@ -16,8 +16,8 @@ class MyPropertyGroup(bpy.types.PropertyGroup):
         
         default='baseconfig',  #default value                       
         update = update_config #update global variable when the value is changed
-
         ) # type: ignore
+    
     
     
 class ValidatorsPanel(bpy.types.Panel):
@@ -66,10 +66,11 @@ class ValidatorsPanel(bpy.types.Panel):
         #loop through the validators and add the operator to the UI
         for key,op_id,label in validators:
             if current_config.get(key,True):
-                state = get_state(key)
-                icon = state_icons.get(state,'PASS')
+                state = get_state(key) 
+                icon = state_icons.get(state,'UNKNOWN')
                 row = box.row(align=True)
                 row.operator(op_id, text=label, icon=icon)
+        
     
 
         #separate the validate button with the rest of the validators

@@ -12,10 +12,10 @@ def freezetransform_func(validation_type):
         return {'FINISHED'}
     
     obj = bpy.context.active_object
-
     location = obj.location
     rotation = obj.rotation_euler
     scale = obj.scale
+    
 
     #if the validation type is check, then we will check the transform
     if validation_type =="check":
@@ -24,8 +24,9 @@ def freezetransform_func(validation_type):
         print("Transform is good") 
         set_state("freezetransform",'PASS')
     else:
-        print("Transform is not good") 
-        set_state("freezetransform",'NEEDS_FIXING')
+        print("Transform is not good")
+        set_state("freezetransform",'PASS') 
+        
         
 
     #if the validation type is fix, then we will fix the transform

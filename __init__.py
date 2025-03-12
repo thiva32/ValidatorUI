@@ -25,16 +25,22 @@ bl_info = {
 
 from .import validators_op
 from .import validators_ui
+from .import statemanager 
 
 def register(): 
     validators_op.register()
     validators_ui.register()
+    statemanager.register_state()
     
 
 
 def unregister(): 
     validators_op.unregister()
     validators_ui.unregister()
+    statemanager.unregister_state()
+
+if __name__ == "__main__":
+    register()
     
 
 
